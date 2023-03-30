@@ -10,7 +10,11 @@ const app = express();
 // import db-connection
 require("./db");
 
+// accept request from any origin
 app.use(cors());
+
+// expect json data
+app.use(express.json())
 
 // routes
 app.use('/api/v1', animals);
