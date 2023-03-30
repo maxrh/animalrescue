@@ -10,6 +10,9 @@ const app = express();
 // import db-connection
 require("./db");
 
+// serve docs
+app.use("/", express.static('docs'));
+
 // accept request from any origin
 app.use(cors());
 
