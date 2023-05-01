@@ -24,6 +24,10 @@ const AnimalSchema = new Schema({
     colors: {
         type: Array,
         required: true
+    },
+    adopted: {
+        type: Boolean,
+        required: false
     }
 });
 
