@@ -5,11 +5,35 @@ const auth = require('../auth.middleware');
 
 // get all animals
 router.get("/animals", async function(req, res, next) {
+    let offset = parseInt(req.query.offset) || 0;
+    let limit = parseInt(req.query.limit) || 5;
+
     try {
-        let result = await Animal.find();
-        return res.status(200).json(result);
+
+        let count = (await Animal.find()).length;
+        let results = await Animal.find().skip(offset).limit(limit);
+        let queryStringNext = `?offset=${offset + limit}&limit=${limit}`;
+        let queryStringPrev = null;
+
+        if (offset >= limit) {
+            queryStringPrev = `?offset=${offset - limit}&limit=${limit}`;
+        }
+
+        let apiUrl = `${req.protocol}://${req.hostname}${req.hostname === 'localhost' ? ':4000' : '' }`;
+        let apiPath = `${req.baseUrl}${req.path}`;
+
+        let output = {
+            count,
+            next: (offset + limit < count) ? apiUrl + apiPath + queryStringNext : null,
+            prev: (offset > 0) ? apiUrl + apiPath + queryStringPrev : null,
+            results,
+            url: apiUrl + req.originalUrl
+        }
+
+        return res.status(200).json(output);
     } catch (error) {
         return next(error);
+
     }
 });
 
